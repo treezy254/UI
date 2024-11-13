@@ -1,0 +1,163 @@
+
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat with AI</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* style.css */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #cfd9df 0%, #e2ebf0 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.chat-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.chat-box {
+  width: 350px;
+  max-width: 90%;
+  border-radius: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.chat-header {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.chat-content {
+  flex-grow: 1;
+  margin-bottom: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  color: #333;
+}
+
+.chat-input {
+  display: flex;
+  gap: 10px;
+}
+
+.chat-input input {
+  flex-grow: 1;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.5);
+  color: #333;
+  outline: none;
+}
+
+.chat-input button {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  background: #333;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.chat-input button:hover {
+  background: #555;
+}
+
+
+.user-message,
+.ai-message {
+  padding: 10px;
+  border-radius: 10px;
+  margin: 5px 0;
+  max-width: 80%;
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: rgba(0, 123, 255, 0.5);
+  color: white;
+}
+
+.ai-message {
+  align-self: flex-start;
+  background-color: rgba(240, 240, 240, 0.8);
+  color: #333;
+}
+
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-box">
+      <div class="chat-header">Chat with AI</div>
+      <div class="chat-content" id="chat-content">
+        <!-- Chat messages will appear here -->
+      </div>
+      <div class="chat-input">
+        <input type="text" id="user-input" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+  <script src="script.js">
+    // script.js
+
+function sendMessage() {
+  const userInput = document.getElementById("user-input");
+  const chatContent = document.getElementById("chat-content");
+
+  if (userInput.value.trim() !== "") {
+    // Create user message
+    const userMessage = document.createElement("div");
+    userMessage.className = "user-message";
+    userMessage.textContent = userInput.value;
+    chatContent.appendChild(userMessage);
+
+    // Clear input field
+    userInput.value = "";
+
+    // Simulate AI response
+    setTimeout(() => {
+      const aiMessage = document.createElement("div");
+      aiMessage.className = "ai-message";
+      aiMessage.textContent = "Hello! How can I assist you today?";
+      chatContent.appendChild(aiMessage);
+
+      // Scroll to bottom of chat
+      chatContent.scrollTop = chatContent.scrollHeight;
+    }, 500);
+  }
+}
+
+  </script>
+</body>
+</html>
+
+  
