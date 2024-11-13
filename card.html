@@ -1,119 +1,123 @@
 <html>
-    <head><title></title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    </head>
-    <style>
-        /* Base styling */
-/* Base styling */
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #e0e5ec;
-  font-family: Arial, sans-serif;
-}
+<head>
+    <title></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-/* User Story Card Styling */
-.user-story-card {
-  width: 250px;
-  height: 250px;
-  padding: 15px;
-  border-radius: 15px;
-  background: linear-gradient(to top right, #f32c3c, #FF802B);;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: box-shadow 0.3s ease;
-  position: relative;
-}
+</head>
+<style>
+    /* Base styling */
+    /* Base styling */
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #e0e5ec;
+        font-family: Arial, sans-serif;
+    }
 
-/* Header */
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  font-size: 0.9em;
-  color: #333;
-}
+    /* User Story Card Styling */
+    .user-story-card {
+        width: 200px;
+        height: 200px;
+        padding: 15px;
+        border-radius: 5px;
+        background: #E96230;
+        ;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: box-shadow 0.3s ease;
+        position: relative;
+    }
 
-.stakeholder-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  margin-right: 5px;
-}
+    /* Header */
+    .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 0.9em;
+        color: #333;
+    }
 
-.stakeholder-name {
-  font-weight: bold;
-  margin-right: auto;
-}
+    .stakeholder-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
 
-.info-icon,
-.value-icon {
-  font-size: 1.1em;
-  cursor: pointer;
-  margin-left: 8px;
-  position: relative;
-}
+    .stakeholder-name {
+        font-weight: bold;
+        margin-right: auto;
+    }
 
-/* Hover tooltip */
-.info-icon:hover::after,
-.value-icon:hover::after {
-  content: attr(title);
-  position: absolute;
-  bottom: -30px;
-  left: -5px;
-  background-color: #ffffff;
-  color: #333;
-  padding: 4px 8px;
-  border-radius: 5px;
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-  white-space: nowrap;
-  font-size: 0.8em;
-}
+    .info-icon,
+    .value-icon {
+        font-size: 1.1em;
+        cursor: pointer;
+        margin-left: 8px;
+        position: relative;
+    }
 
-/* User Story Content */
-.card-content {
-  font-size: 1em;
-  color: #fff;
-  text-align: left;
-  padding: 10px;
-  border-radius: 10px;
-  background-color: transparent;
-  height: 100%;
+    /* Hover tooltip */
+    .info-icon:hover::after,
+    .value-icon:hover::after {
+        content: attr(title);
+        position: absolute;
+        bottom: -30px;
+        left: -5px;
+        background-color: #ffffff;
+        color: #333;
+        padding: 4px 8px;
+        border-radius: 5px;
+        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+        white-space: nowrap;
+        font-size: 0.8em;
+    }
 
-}
+    /* User Story Content */
+    .card-content {
+        font-size: 1em;
+        color: #fff;
+        text-align: left;
+        padding: 10px;
+        border-radius: 10px;
+        background-color: transparent;
+        height: 100%;
 
-.user-story {
-  font-size: 1.1em;
-  font-weight: 500;
-}
+    }
 
-#stakeholder-icon {
-    width: 1rem;
-    height: 100%;
-}
+    .user-story {
+        font-size: 1.1em;
+        font-weight: 500;
+    }
 
-/* Claymorphism shadow effect on hover */
+    #stakeholder-icon {
+        width: 1rem;
+        height: 100%;
+    }
 
+    /* Claymorphism shadow effect on hover */
+</style>
 
-    </style>
-    <body>
-        <div class="user-story-card">
-            <div class="card-header">
-                <i class="fas fa-user-circle stakeholder-icon" id="stakeholder-icon"></i>
-                <span class="stakeholder-name">Stakeholder Name</span>
-                <span class="info-icon" title="More about the stakeholder">❗</span>
-                <span class="value-icon" title="Value Proposition">💡</span>
-              </div>
-            
-            <div class="card-content">
-              <p class="user-story">As a <span class="stakeholder-role">Stakeholder</span>, I want everything possible to fi into this one div before the nex 5 minutes...</p>
-            </div>
-          </div>
-          
-    </body>
+<body>
+    <div class="user-story-card">
+        <div class="card-header">
+            <i class="fas fa-user-circle stakeholder-icon" id="stakeholder-icon"></i>
+            <span class="stakeholder-name">Stakeholder Name</span>
+            <span class="info-icon" title="More about the stakeholder">❗</span>
+            <span class="value-icon" title="Value Proposition">💡</span>
+        </div>
+
+        <div class="card-content">
+            <p class="user-story">As a <span class="stakeholder-role">Stakeholder</span>, I want everything possible to
+                fi into this one div before the nex 5 minutes...</p>
+        </div>
+    </div>
+
+</body>
+
 </html>
