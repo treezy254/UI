@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seamless BPMN Layout</title>
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.2.1/css/all.css">
+    <link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.11.1/dist/assets/bpmn-js.css" />
+
+    <style>
+        :root {
+            --primary-color: #2796db;
+            --primary-hover: #1e7ab8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "IBM Plex Sans", sans-serif;
+            font-size: 14px;
+            height: 100vh;
+            overflow: hidden;
+            background: #f0f2f5;
+        }
+
+        .content-area {
+            height: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .process-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        #canvas {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+            background-image: radial-gradient(circle, #ccc 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Zoom Controls */
+        .io-zoom-controls {
+            position: fixed;
+            bottom: 80px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .io-control-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .io-control-list li {
+            margin: 0;
+        }
+
+        .io-control-list button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 36px;
+            height: 36px;
+        }
+
+        .io-control-list button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .io-control-list hr {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 5px 0;
+        }
+
+        /* General reset and box sizing */
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: "IBM Plex Sans", sans-serif;
+            font-size: 14px;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Full-screen Canvas for BPMN Diagram */
+        #canvas {
+            width: 100%;
+            height: 100vh;
+            display: block;
+            /* Ensures canvas fills entire view */
+            background-color: #f4f4f4;
+            /* Optional background for the diagram */
+        }
+
+        /* Zoom Controls */
+        .io-zoom-controls {
+            position: fixed;
+            right: 10px;
+            bottom: 80px;
+            z-index: 1000;
+        }
+
+        /* About Section Styling */
+        .io-about {
+            position: fixed;
+            bottom: 8px;
+            right: 80px;
+            z-index: 999;
+        }
+
+        .io-about .io-control-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .io-control-list.io-horizontal {
+            display: inline-block;
+        }
+
+        .io-control-list.io-horizontal li {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .io-control-list.io-horizontal a {
+            font-size: 13px;
+            line-height: 20px;
+            font-weight: normal;
+            color: #007bff;
+            text-decoration: none;
+            padding: 2px;
+        }
+
+        .io-control-list.io-horizontal a:hover {
+            text-decoration: underline;
+        }
+
+        /* Styling for the Privacy, Terms, Imprint, and other links */
+        .io-about a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 13px;
+            line-height: 20px;
+        }
+
+        .io-about a:hover {
+            text-decoration: underline;
+        }
+
+        /* Optional styling for better contrast */
+        body.shown .io-about {
+            right: 90px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Zoom Controls -->
+    <div class="io-zoom-controls">
+        <ul class="io-control-list">
+            <li>
+                <button title="reset zoom" jsaction="click:bio.zoomReset">
+                    <span class="icon-size-reset">↺</span>
+                </button>
+            </li>
+            <li>
+                <hr>
+            </li>
+            <li>
+                <button title="zoom in" jsaction="click:bio.zoomIn">
+                    <span class="icon-plus">+</span>
+                </button>
+            </li>
+            <li>
+                <hr>
+            </li>
+            <li>
+                <button href="#" title="zoom out" jsaction="click:bio.zoomOut">
+                    <span class="icon-minus">-</span>
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Content Area -->
+    <div id="canvas"></div>
+
+
+    <!-- About Section and Links -->
+    <div class="io-about">
+        <ul class="io-control-list io-horizontal">
+            <li>
+                <a href="/"
+                    target="_blank" title="privacy policy">
+                    Privacy
+                </a>
+            </li>
+            <li>
+                <a href="/"
+                    target="_blank" title="terms of use">
+                    Terms
+                </a>
+            </li>
+            <li>
+                <a href="/"
+                    target="_blank" title="imprint">
+                    Imprint
+                </a>
+            </li>
+            <li>
+                <a href="/" onclick="Osano.cm.showDrawer('osano-cm-dom-info-dialog-open')">
+                    Cookie Preferences
+                </a>
+            </li>
+            <li>
+                <a title="More information about this demo" jsaction="click:bio.showAbout" data-track="help:open-about">
+                    About
+                </a>
+            </li>
+            <li>
+                <a href="/"
+                    title="Report an issue or suggest improvements" target="_blank" data-track="help:open-report">
+                    Give Feedback
+                </a>
+            </li>
+        </ul>
+    </div>
+
+
+    <script src="https://unpkg.com/bpmn-js@17.11.1/dist/bpmn-modeler.development.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const bpmnXML = `<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:startEvent id="E1" name="Patient Data Input Started">
+      <bpmn:outgoing>Flow_E1_A1</bpmn:outgoing>
+    </bpmn:startEvent>
+    
+    <bpmn:userTask id="A1" name="Enter Patient Details">
+      <bpmn:incoming>Flow_E1_A1</bpmn:incoming>
+      <bpmn:outgoing>Flow_A1_A2</bpmn:outgoing>
+    </bpmn:userTask>
+    
+    <bpmn:serviceTask id="A2" name="Save Patient Record">
+      <bpmn:incoming>Flow_A1_A2</bpmn:incoming>
+      <bpmn:outgoing>Flow_A2_E2</bpmn:outgoing>
+    </bpmn:serviceTask>
+    
+    <bpmn:intermediateCatchEvent id="E2" name="Regular Vital Monitoring">
+      <bpmn:incoming>Flow_A2_E2</bpmn:incoming>
+      <bpmn:outgoing>Flow_E2_A3</bpmn:outgoing>
+      <bpmn:timerEventDefinition />
+    </bpmn:intermediateCatchEvent>
+    
+    <bpmn:serviceTask id="A3" name="Monitor Vital Signs">
+      <bpmn:incoming>Flow_E2_A3</bpmn:incoming>
+      <bpmn:outgoing>Flow_A3_G1</bpmn:outgoing>
+    </bpmn:serviceTask>
+    
+    <bpmn:exclusiveGateway id="G1" name="Vitals Threshold Check">
+      <bpmn:incoming>Flow_A3_G1</bpmn:incoming>
+      <bpmn:outgoing>Flow_G1_A4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_G1_E2</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    
+    <bpmn:serviceTask id="A4" name="Generate Alert">
+      <bpmn:incoming>Flow_G1_A4</bpmn:incoming>
+      <bpmn:outgoing>Flow_A4_E3</bpmn:outgoing>
+    </bpmn:serviceTask>
+    
+    <bpmn:intermediateThrowEvent id="E3" name="Alert Notification">
+      <bpmn:incoming>Flow_A4_E3</bpmn:incoming>
+      <bpmn:outgoing>Flow_E3_A5</bpmn:outgoing>
+      <bpmn:messageEventDefinition />
+    </bpmn:intermediateThrowEvent>
+    
+    <bpmn:userTask id="A5" name="Respond to Alert">
+      <bpmn:incoming>Flow_E3_A5</bpmn:incoming>
+      <bpmn:outgoing>Flow_A5_G2</bpmn:outgoing>
+    </bpmn:userTask>
+    
+    <bpmn:exclusiveGateway id="G2" name="Is Treatment Required?">
+      <bpmn:incoming>Flow_A5_G2</bpmn:incoming>
+      <bpmn:outgoing>Flow_G2_A6</bpmn:outgoing>
+      <bpmn:outgoing>Flow_G2_E4</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    
+    <bpmn:userTask id="A6" name="Initiate Treatment">
+      <bpmn:incoming>Flow_G2_A6</bpmn:incoming>
+      <bpmn:outgoing>Flow_A6_E4</bpmn:outgoing>
+    </bpmn:userTask>
+    
+    <bpmn:endEvent id="E4" name="Process Complete">
+      <bpmn:incoming>Flow_G2_E4</bpmn:incoming>
+      <bpmn:incoming>Flow_A6_E4</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_E1_A1" sourceRef="E1" targetRef="A1" />
+    <bpmn:sequenceFlow id="Flow_A1_A2" sourceRef="A1" targetRef="A2" />
+    <bpmn:sequenceFlow id="Flow_A2_E2" sourceRef="A2" targetRef="E2" />
+    <bpmn:sequenceFlow id="Flow_E2_A3" sourceRef="E2" targetRef="A3" />
+    <bpmn:sequenceFlow id="Flow_A3_G1" sourceRef="A3" targetRef="G1" />
+    <bpmn:sequenceFlow id="Flow_G1_A4" sourceRef="G1" targetRef="A4" name="Vitals exceed threshold" />
+    <bpmn:sequenceFlow id="Flow_G1_E2" sourceRef="G1" targetRef="E2" name="Vitals normal" />
+    <bpmn:sequenceFlow id="Flow_A4_E3" sourceRef="A4" targetRef="E3" />
+    <bpmn:sequenceFlow id="Flow_E3_A5" sourceRef="E3" targetRef="A5" />
+    <bpmn:sequenceFlow id="Flow_A5_G2" sourceRef="A5" targetRef="G2" />
+    <bpmn:sequenceFlow id="Flow_G2_A6" sourceRef="G2" targetRef="A6" name="Yes" />
+    <bpmn:sequenceFlow id="Flow_G2_E4" sourceRef="G2" targetRef="E4" name="No" />
+    <bpmn:sequenceFlow id="Flow_A6_E4" sourceRef="A6" targetRef="E4" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="E1_di" bpmnElement="E1">
+        <dc:Bounds x="152" y="192" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="132" y="235" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A1_di" bpmnElement="A1">
+        <dc:Bounds x="240" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2_di" bpmnElement="A2">
+        <dc:Bounds x="400" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="E2_di" bpmnElement="E2">
+        <dc:Bounds x="552" y="192" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="532" y="235" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A3_di" bpmnElement="A3">
+        <dc:Bounds x="640" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="G1_di" bpmnElement="G1" isMarkerVisible="true">
+        <dc:Bounds x="795" y="185" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="780" y="161" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A4_di" bpmnElement="A4">
+        <dc:Bounds x="900" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="E3_di" bpmnElement="E3">
+        <dc:Bounds x="1062" y="192" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1042" y="235" width="77" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A5_di" bpmnElement="A5">
+        <dc:Bounds x="1150" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="G2_di" bpmnElement="G2" isMarkerVisible="true">
+        <dc:Bounds x="1305" y="185" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1290" y="161" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A6_di" bpmnElement="A6">
+        <dc:Bounds x="1410" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="E4_di" bpmnElement="E4">
+        <dc:Bounds x="1572" y="192" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1552" y="235" width="77" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>`;
+
+            // Initialize BPMN Viewer
+            const viewer = new BpmnJS({
+                container: '#canvas',
+                height: '100%',
+                width: '100%'
+            });
+
+            // Load BPMN diagram
+            viewer.importXML(bpmnXML)
+                .then(() => {
+                    const canvas = viewer.get('canvas');
+                    canvas.zoom('fit-viewport', 'auto'); // Ensure diagram is viewable on load
+                })
+                .catch(err => {
+                    console.error('Error loading BPMN diagram', err);
+                });
+
+            // Zoom functions
+            function zoomReset() {
+                const canvas = viewer.get('canvas');
+                canvas.zoom('fit-viewport', 'auto'); // Reset zoom to fit viewport
+            }
+
+            function zoomIn() {
+                const zoom = viewer.get('zoomScroll');
+                zoom.zoom(1.2); // Increase zoom by 20%
+            }
+
+            function zoomOut() {
+                const zoom = viewer.get('zoomScroll');
+                zoom.zoom(0.8); // Decrease zoom by 20%
+            }
+
+            // Hook the jsaction to the buttons
+            document.querySelector('[jsaction="click:bio.zoomReset"]').addEventListener('click', zoomReset);
+            document.querySelector('[jsaction="click:bio.zoomIn"]').addEventListener('click', zoomIn);
+            document.querySelector('[jsaction="click:bio.zoomOut"]').addEventListener('click', zoomOut);
+        });
+    </script>
+
+</body>
+
+</html>
