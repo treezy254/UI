@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="18.0.0">
+  <bpmn:message id="Message_ProcessModelGenerated" name="ProcessModelGenerated" />
+  <bpmn:message id="Message_DataModelGenerated" name="DataModelGenerated" />
+  <bpmn:process id="Process_UserFlow" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_Login" name="Start Login">
+      <bpmn:outgoing>Flow_Login</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_UserLogin" name="User Login">
+      <bpmn:incoming>Flow_Login</bpmn:incoming>
+      <bpmn:outgoing>Flow_LoginChoice</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_ChooseAction" name="Choose Action">
+      <bpmn:incoming>Flow_LoginChoice</bpmn:incoming>
+      <bpmn:outgoing>Flow_UseApp</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ProvideFeedback</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_ProvideFeedback" name="Provide Feedback">
+      <bpmn:incoming>Flow_ProvideFeedback</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:task id="Task_UseApp" name="Use App">
+      <bpmn:incoming>Flow_UseApp</bpmn:incoming>
+      <bpmn:outgoing>Flow_FillQuestionnaire</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_FillQuestionnaire" name="Fill Questionnaire">
+      <bpmn:incoming>Flow_FillQuestionnaire</bpmn:incoming>
+      <bpmn:outgoing>Flow_02zecgp</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:subProcess id="SubProcess_GenerateArtifacts" name="Generate Artifacts">
+      <bpmn:incoming>Flow_02zecgp</bpmn:incoming>
+      <bpmn:outgoing>Flow_StoreContent</bpmn:outgoing>
+      <bpmn:startEvent id="StartEvent_SubProcess">
+        <bpmn:outgoing>Flow_StartToGenerate</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:task id="Task_Generate" name="Generate">
+        <bpmn:incoming>Flow_StartToGenerate</bpmn:incoming>
+        <bpmn:outgoing>Flow_EndArtifact</bpmn:outgoing>
+      </bpmn:task>
+      <bpmn:endEvent id="EndEvent_SubProcess">
+        <bpmn:incoming>Flow_EndArtifact</bpmn:incoming>
+      </bpmn:endEvent>
+    </bpmn:subProcess>
+    <bpmn:task id="Task_StoreContent" name="Store Content">
+      <bpmn:incoming>Flow_StoreContent</bpmn:incoming>
+      <bpmn:outgoing>Flow_ProcessModelEvent</bpmn:outgoing>
+      <bpmn:outgoing>Flow_DataModelEvent</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="Event_ProcessModelGenerated" name="Process Model Generated">
+      <bpmn:incoming>Flow_ProcessModelEvent</bpmn:incoming>
+      <bpmn:outgoing>Flow_DisplayProcessModel</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_ProcessModel" messageRef="Message_ProcessModelGenerated" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:task id="Task_DisplayProcessModel" name="Display Process Model">
+      <bpmn:incoming>Flow_DisplayProcessModel</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="Event_DataModelGenerated" name="Data Model Generated">
+      <bpmn:incoming>Flow_DataModelEvent</bpmn:incoming>
+      <bpmn:outgoing>Flow_GenerateUI</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_DataModel" messageRef="Message_DataModelGenerated" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:task id="Task_GenerateUI" name="Generate UI Elements">
+      <bpmn:incoming>Flow_GenerateUI</bpmn:incoming>
+      <bpmn:outgoing>Flow_DomainServices</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_GenerateDomainServices" name="Generate Domain Services">
+      <bpmn:incoming>Flow_DomainServices</bpmn:incoming>
+      <bpmn:outgoing>Flow_EndProcess</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_ProcessComplete" name="Process Complete">
+      <bpmn:incoming>Flow_EndProcess</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Login" sourceRef="StartEvent_Login" targetRef="Task_UserLogin" />
+    <bpmn:sequenceFlow id="Flow_LoginChoice" sourceRef="Task_UserLogin" targetRef="Gateway_ChooseAction" />
+    <bpmn:sequenceFlow id="Flow_UseApp" sourceRef="Gateway_ChooseAction" targetRef="Task_UseApp" />
+    <bpmn:sequenceFlow id="Flow_ProvideFeedback" sourceRef="Gateway_ChooseAction" targetRef="Task_ProvideFeedback" />
+    <bpmn:sequenceFlow id="Flow_FillQuestionnaire" sourceRef="Task_UseApp" targetRef="Task_FillQuestionnaire" />
+    <bpmn:sequenceFlow id="Flow_StartToGenerate" sourceRef="StartEvent_SubProcess" targetRef="Task_Generate" />
+    <bpmn:sequenceFlow id="Flow_EndArtifact" sourceRef="Task_Generate" targetRef="EndEvent_SubProcess" />
+    <bpmn:sequenceFlow id="Flow_StoreContent" sourceRef="SubProcess_GenerateArtifacts" targetRef="Task_StoreContent" />
+    <bpmn:sequenceFlow id="Flow_ProcessModelEvent" sourceRef="Task_StoreContent" targetRef="Event_ProcessModelGenerated" />
+    <bpmn:sequenceFlow id="Flow_DataModelEvent" sourceRef="Task_StoreContent" targetRef="Event_DataModelGenerated" />
+    <bpmn:sequenceFlow id="Flow_DisplayProcessModel" sourceRef="Event_ProcessModelGenerated" targetRef="Task_DisplayProcessModel" />
+    <bpmn:sequenceFlow id="Flow_GenerateUI" sourceRef="Event_DataModelGenerated" targetRef="Task_GenerateUI" />
+    <bpmn:sequenceFlow id="Flow_DomainServices" sourceRef="Task_GenerateUI" targetRef="Task_GenerateDomainServices" />
+    <bpmn:sequenceFlow id="Flow_EndProcess" sourceRef="Task_GenerateDomainServices" targetRef="EndEvent_ProcessComplete" />
+    <bpmn:sequenceFlow id="Flow_02zecgp" sourceRef="Task_FillQuestionnaire" targetRef="SubProcess_GenerateArtifacts" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_UserFlow">
+    <bpmndi:BPMNPlane id="Plane_UserFlow" bpmnElement="Process_UserFlow">
+      <bpmndi:BPMNShape id="StartEvent_Login_di" bpmnElement="StartEvent_Login">
+        <dc:Bounds x="152" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_UserLogin_di" bpmnElement="Task_UserLogin">
+        <dc:Bounds x="240" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ChooseAction_di" bpmnElement="Gateway_ChooseAction" isMarkerVisible="true">
+        <dc:Bounds x="395" y="95" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="384" y="71" width="72" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_UseApp_di" bpmnElement="Task_UseApp">
+        <dc:Bounds x="500" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_FillQuestionnaire_di" bpmnElement="Task_FillQuestionnaire">
+        <dc:Bounds x="660" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ProvideFeedback_di" bpmnElement="Task_ProvideFeedback">
+        <dc:Bounds x="500" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_StoreContent_di" bpmnElement="Task_StoreContent">
+        <dc:Bounds x="1050" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DisplayProcessModel_di" bpmnElement="Task_DisplayProcessModel">
+        <dc:Bounds x="1390" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_ProcessModelGenerated_di" bpmnElement="Event_ProcessModelGenerated">
+        <dc:Bounds x="1252" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1232" y="138" width="76" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_DataModelGenerated_di" bpmnElement="Event_DataModelGenerated">
+        <dc:Bounds x="1252" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1240" y="248" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateUI_di" bpmnElement="Task_GenerateUI">
+        <dc:Bounds x="1390" y="190" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateDomainServices_di" bpmnElement="Task_GenerateDomainServices">
+        <dc:Bounds x="1600" y="190" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_ProcessComplete_di" bpmnElement="EndEvent_ProcessComplete">
+        <dc:Bounds x="1792" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1765" y="248" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SubProcess_GenerateArtifacts_di" bpmnElement="SubProcess_GenerateArtifacts" isExpanded="false">
+        <dc:Bounds x="860" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Login_di" bpmnElement="Flow_Login">
+        <di:waypoint x="188" y="120" />
+        <di:waypoint x="240" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_LoginChoice_di" bpmnElement="Flow_LoginChoice">
+        <di:waypoint x="340" y="120" />
+        <di:waypoint x="395" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_UseApp_di" bpmnElement="Flow_UseApp">
+        <di:waypoint x="445" y="120" />
+        <di:waypoint x="500" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ProvideFeedback_di" bpmnElement="Flow_ProvideFeedback">
+        <di:waypoint x="420" y="145" />
+        <di:waypoint x="420" y="240" />
+        <di:waypoint x="500" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_FillQuestionnaire_di" bpmnElement="Flow_FillQuestionnaire">
+        <di:waypoint x="600" y="120" />
+        <di:waypoint x="660" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_StoreContent_di" bpmnElement="Flow_StoreContent">
+        <di:waypoint x="960" y="120" />
+        <di:waypoint x="1050" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ProcessModelEvent_di" bpmnElement="Flow_ProcessModelEvent">
+        <di:waypoint x="1150" y="120" />
+        <di:waypoint x="1252" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DataModelEvent_di" bpmnElement="Flow_DataModelEvent">
+        <di:waypoint x="1100" y="160" />
+        <di:waypoint x="1100" y="230" />
+        <di:waypoint x="1252" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DisplayProcessModel_di" bpmnElement="Flow_DisplayProcessModel">
+        <di:waypoint x="1288" y="120" />
+        <di:waypoint x="1390" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GenerateUI_di" bpmnElement="Flow_GenerateUI">
+        <di:waypoint x="1288" y="230" />
+        <di:waypoint x="1390" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DomainServices_di" bpmnElement="Flow_DomainServices">
+        <di:waypoint x="1490" y="230" />
+        <di:waypoint x="1600" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EndProcess_di" bpmnElement="Flow_EndProcess">
+        <di:waypoint x="1700" y="230" />
+        <di:waypoint x="1792" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02zecgp_di" bpmnElement="Flow_02zecgp">
+        <di:waypoint x="760" y="120" />
+        <di:waypoint x="860" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_0i2g35d">
+    <bpmndi:BPMNPlane id="BPMNPlane_142gqbf" bpmnElement="SubProcess_GenerateArtifacts" />
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
